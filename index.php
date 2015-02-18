@@ -39,11 +39,17 @@ if (isset($_POST["submit"])){
 	$em1=$_POST[em];
 	$target_dir = "uploads/";
 	$target_file = $target_dir . basename($_FILES["fileToUpload"]["name"]);
+	$tmpName = $_FILES['fileToUpload']['tmp_name'];
+	$fp = fopen($tmpName, 'r');
+	$data = fread($fp, filesize($tmpName));
+	$data = addslashes($data);
+	fclose($fp);
 
-if (move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file)) {
-        echo "The file ". basename( $_FILES["fileToUpload"]["name"]). " has been uploaded.";}	
+	if (move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file)) {
+        echo "The file ". basename( $_FILES["fileToUpload"]["name"]). " has been uploaded.";
+   }	
 	$sql = "INSERT INTO MyGuests (firstname, lastname, email, poza, calepoz)
-		   	VALUES ('$fn1', '$ln1', '$em1', '$target_file', '$target_file')";
+		   	VALUES ('$fn1', '$ln1', '$em1', '$data', '$target_file')";
 	if (mysqli_query($conn, $sql)) {
     	echo "New record created successfully";
 	} else {
